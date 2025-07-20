@@ -1,0 +1,336 @@
+	<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation : Gagner de l'Argent en Ligne</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutral with Teal Accent -->
+    <!-- Application Structure Plan: The application transforms the linear course plan into an interactive dashboard. The structure begins with an intro pitch, followed by a comparative chart of all methods to give a quick overview. The core of the app is a card-based interactive section where users can select one of the four money-making methods to see detailed information (concept, platforms, pros/cons, and a step-by-step tutorial in an accordion). This is followed by sections for the required 'toolkit' and long-term strategy. This non-linear, interactive structure was chosen over a simple scrollable page to empower the user to explore and compare methods based on their interest and the visual data from the chart, fostering active exploration rather than passive reading. -->
+    <!-- Visualization & Content Choices: 1. **Comparison of Methods**: Report Info: Four distinct methods with varying potential. Goal: Compare. Viz: Horizontal Bar Chart (Chart.js) comparing 'Potential Hourly Rate' & 'Accessibility'. Interaction: Hover for tooltips. Justification: Provides a quick, data-driven visual guide for users to decide where to focus. 2. **Method Details**: Report Info: Descriptions and steps for each method. Goal: Organize/Inform. Presentation: Interactive cards to select a method, with details displayed in a dedicated content area. Tutorials are in collapsible accordions. Interaction: Click to select method, click to expand/collapse tutorial steps. Justification: Prevents information overload and allows focused learning. 3. **Key Stats**: Report Info: Potential earnings (€50-€200/month). Goal: Inform. Presentation: Styled 'stat cards' with large text. Justification: Highlights motivating figures. Library/Method: All implemented with Chart.js, HTML/CSS/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; height: 250px; max-height: 400px; }
+        @media (min-width: 640px) { .chart-container { height: 300px; } }
+        @media (min-width: 1024px) { .chart-container { height: 350px; } }
+        .smooth-transition { transition: all 0.3s ease-in-out; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-700">De Zéro à l'Euro</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">La méthode complète pour générer un revenu d'appoint sur Internet, même en partant de rien.</p>
+        </header>
+
+        <section id="intro" class="bg-white p-8 rounded-2xl shadow-lg mb-12">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-4">Prêt à transformer votre temps libre en argent ?</h2>
+                    <p class="text-slate-600 mb-6">Cette formation est votre guide pas à pas. Découvrez des méthodes concrètes et des sites fiables qui vous paient pour des tâches simples, sans nécessiter de compétence ou d'investissement de départ. L'objectif est simple : vous aider à gagner vos premiers euros en ligne, en toute sécurité.</p>
+                    <a href="#methods" class="inline-block bg-teal-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-teal-700 smooth-transition">Découvrir les méthodes</a>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="bg-teal-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-teal-700">0€</p>
+                        <p class="text-sm text-teal-800 font-medium">Investissement Requis</p>
+                    </div>
+                    <div class="bg-teal-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-teal-700">100%</p>
+                        <p class="text-sm text-teal-800 font-medium">Débutant</p>
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded-lg col-span-2">
+                        <p class="text-3xl font-bold text-slate-700">50-200€</p>
+                        <p class="text-sm text-slate-800 font-medium">Potentiel de gain mensuel</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="comparison" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">Quelle méthode choisir ?</h2>
+            <p class="text-slate-600 text-center mb-8 max-w-2xl mx-auto">Ce graphique vous aide à comparer les différentes méthodes selon leur potentiel de gain horaire et leur facilité d'accès pour un débutant. Utilisez-le pour trouver le point de départ qui vous convient le mieux.</p>
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <div class="chart-container max-w-4xl mx-auto">
+                    <canvas id="methodsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="methods" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2">Explorez les 4 Méthodes</h2>
+            <p class="text-slate-600 text-center mb-8 max-w-2xl mx-auto">Cette section est le cœur de notre formation. Cliquez sur une méthode pour explorer les détails, découvrir les plateformes recommandées et suivre un guide pas à pas pour commencer.</p>
+            <div id="method-selector" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            </div>
+            <div id="method-details" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg min-h-[300px] smooth-transition">
+            </div>
+        </section>
+
+        <section id="toolkit" class="bg-white p-8 rounded-2xl shadow-lg mb-12">
+             <h2 class="text-3xl font-bold text-center mb-8">Votre Boîte à Outils pour Démarrer</h2>
+             <div class="max-w-3xl mx-auto grid md:grid-cols-2 gap-6 text-center">
+                 <div class="border border-slate-200 p-6 rounded-xl">
+                     <div class="text-4xl mb-3">✉️</div>
+                     <h3 class="text-xl font-semibold mb-2">Adresse E-mail Dédiée</h3>
+                     <p class="text-slate-600">Créez une nouvelle adresse e-mail (Gmail, Outlook) uniquement pour vos inscriptions sur les sites. Cela gardera votre boîte personnelle propre.</p>
+                 </div>
+                 <div class="border border-slate-200 p-6 rounded-xl">
+                    <div class="text-4xl mb-3">💳</div>
+                     <h3 class="text-xl font-semibold mb-2">Compte PayPal Sécurisé</h3>
+                     <p class="text-slate-600">La plupart des sites paient via PayPal. Assurez-vous d'avoir un compte vérifié pour recevoir vos gains sans encombre.</p>
+                 </div>
+             </div>
+        </section>
+        
+        <section id="strategy">
+            <h2 class="text-3xl font-bold text-center mb-8">Stratégie & Vision à Long Terme</h2>
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="font-semibold text-2xl mb-4 text-teal-700">La Stratégie du "Panier Garni"</h3>
+                    <p class="text-slate-600 mb-4">Le secret de la régularité des gains est la diversification. Ne dépendez jamais d'un seul site ! En vous inscrivant sur plusieurs plateformes, vous multipliez les opportunités.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="bg-teal-500 w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span><span>Créez une routine : consacrez un peu de temps chaque jour à 2 ou 3 sites différents.</span></li>
+                        <li class="flex items-start"><span class="bg-teal-500 w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span><span>Quand un site a peu de missions, passez à un autre. Vous aurez toujours quelque chose à faire.</span></li>
+                        <li class="flex items-start"><span class="bg-teal-500 w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span><span>Cela vous protège si un site venait à fermer ou à changer ses conditions.</span></li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 text-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="font-semibold text-2xl mb-4 text-teal-400">Note Importante sur les Revenus</h3>
+                    <p class="text-slate-300 mb-4">Gagner de l'argent en ligne, même en petites quantités, constitue un revenu. Il est de votre responsabilité de vous renseigner sur les obligations fiscales en vigueur dans votre pays de résidence.</p>
+                    <p class="text-slate-400 text-sm italic">Cette formation fournit des informations à but éducatif et ne constitue pas un conseil fiscal. Rapprochez-vous des autorités compétentes pour obtenir des informations précises.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="text-center py-6 bg-slate-100 mt-12">
+        <p class="text-slate-600">Passez à l'action et commencez votre aventure en ligne dès aujourd'hui !</p>
+    </footer>
+
+    <script>
+        const methodsData = [
+            {
+                id: 'microtasks',
+                title: 'Missions Rémunérées',
+                icon: '🖱️',
+                shortDesc: 'Tâches simples et rapides.',
+                potential: 3,
+                accessibility: 9,
+                description: 'Les micro-tâches consistent à réaliser des actions simples en ligne qui ne demandent aucune compétence particulière. C\'est le point de départ idéal pour se familiariser avec le monde des revenus en ligne.',
+                pros: ['Très facile pour commencer', 'Pas de barrière à l\'entrée', 'Gains rapides (mais faibles)'],
+                cons: ['Très répétitif', 'Rémunération faible', 'Peut être lassant'],
+                platforms: ['Swagbucks', 'Toluna Influencers', 'Clickworker'],
+                tutorial: [
+                    { title: 'Choisir une plateforme fiable', content: 'Inscrivez-vous sur un site reconnu comme Swagbucks. L\'inscription est gratuite et rapide.' },
+                    { title: 'Compléter son profil', content: 'Prenez quelques minutes pour remplir votre profil. Cela peut parfois débloquer des offres mieux ciblées.' },
+                    { title: 'Commencer par les gains faciles', content: 'Concentrez-vous sur les "Daily Polls" (sondages quotidiens) ou les vidéos à regarder. Ce sont des points faciles à obtenir chaque jour pour rester motivé.' },
+                    { title: 'Explorer les offres "Discover"', content: 'Parcourez les offres de découverte. Certaines demandent de s\'inscrire à un jeu ou à une newsletter et peuvent rapporter beaucoup de points d\'un coup.' }
+                ]
+            },
+            {
+                id: 'surveys',
+                title: 'Sondages Rémunérés',
+                icon: '📝',
+                shortDesc: 'Donnez votre avis et soyez payé.',
+                potential: 5,
+                accessibility: 8,
+                description: 'De nombreuses entreprises sont prêtes à payer pour connaître votre opinion de consommateur. Vous répondez à des questionnaires sur des produits, des services ou des habitudes de vie.',
+                pros: ['Aucune compétence requise', 'Accessible partout', 'Intéressant pour découvrir de nouveaux produits'],
+                cons: ['Souvent des disqualifications', 'Peut prendre du temps', 'Le profil doit correspondre'],
+                platforms: ['YouGov', 'Toluna', 'Ipsos iSay'],
+                tutorial: [
+                    { title: 'L\'étape cruciale : le profil', content: 'Remplissez votre profil démographique à 100% avec le plus de détails possible. C\'est ce qui détermine si vous êtes éligible pour un sondage. Soyez honnête !' },
+                    { title: 'Vérifier ses e-mails', content: 'Activez les notifications par e-mail pour être averti dès qu\'un nouveau sondage correspondant à votre profil est disponible.' },
+                    { title: 'Ne pas se décourager', content: 'Vous serez souvent disqualifié après quelques questions. C\'est normal ! Le site cherche un profil très spécifique. Passez simplement au suivant.' },
+                    { title: 'Être cohérent', content: 'Répondez honnêtement et de manière cohérente. Les plateformes ont des questions pièges pour détecter les réponses aléatoires.' }
+                ]
+            },
+            {
+                id: 'testing',
+                title: 'Tests de Sites Web',
+                icon: '💻',
+                shortDesc: 'Surfez et donnez votre avis.',
+                potential: 9,
+                accessibility: 6,
+                description: 'Soyez payé pour tester l\'ergonomie et la facilité d\'utilisation de sites web et d\'applications mobiles. Vous enregistrez votre écran et votre voix en commentant votre expérience.',
+                pros: ['Très bien payé (10-20€ par test)', 'Travail intéressant et varié', 'Impact direct sur des produits réels'],
+                cons: ['Nécessite un micro et un endroit calme', 'Les tests sont limités ("premier arrivé, premier servi")', 'Le test de qualification peut être sélectif'],
+                platforms: ['UserTesting', 'Testapic', 'TryMyUI'],
+                tutorial: [
+                    { title: 'S\'équiper correctement', content: 'Un simple micro-casque (comme celui de votre smartphone) suffit, mais assurez-vous d\'être dans un environnement calme et sans bruit de fond.' },
+                    { title: 'Passer le test de qualification', content: 'C\'est l\'étape clé. Parlez fort, clairement, et commentez TOUT ce que vous faites et pensez. "Je clique ici car je pense que...", "Ceci n\'est pas clair...". Montrez que vous pouvez donner un feedback utile.' },
+                    { title: 'Installer le logiciel', content: 'Chaque plateforme a un petit logiciel d\'enregistrement d\'écran à installer. C\'est simple et sécurisé.' },
+                    { title: 'Être très réactif', content: 'Les places pour les tests partent en quelques minutes. Gardez un œil sur vos e-mails ou l\'application et acceptez les missions dès que vous les voyez.' }
+                ]
+            },
+            {
+                id: 'transcription',
+                title: 'Transcription Audio',
+                icon: '🎧',
+                shortDesc: 'Écoutez et tapez ce que vous entendez.',
+                potential: 7,
+                accessibility: 4,
+                description: 'Convertissez des fichiers audio ou vidéo en texte. Ce travail demande de la concentration et une bonne vitesse de frappe, mais peut devenir une source de revenus stable.',
+                pros: ['Travail flexible', 'La compétence s\'améliore avec la pratique', 'Potentiel de revenu intéressant une fois rapide'],
+                cons: ['Demande de la concentration', 'Le test d\'entrée peut être difficile', 'La qualité audio peut être mauvaise'],
+                platforms: ['Scribie', 'Rev', 'GoTranscript'],
+                tutorial: [
+                    { title: 'Passer le test d\'entrée', content: 'La plupart des sites comme Scribie ou Rev ont un test de transcription. Prenez votre temps, lisez attentivement leur guide de style et faites plusieurs relectures avant de soumettre.' },
+                    { title: 'Commencer par des fichiers courts et clairs', content: 'Au début, ne vous jetez pas sur les fichiers longs ou avec beaucoup d\'intervenants. Choisissez des audios courts avec un seul interlocuteur et un son de bonne qualité.' },
+                    { title: 'Apprendre les raccourcis clavier', content: 'Utilisez les raccourcis du lecteur audio de la plateforme (pour pause, retour en arrière, etc.). Cela vous fera gagner un temps précieux.' },
+                    { title: 'Relire, relire, relire', content: 'Votre travail sera noté. Une bonne note vous donnera accès à plus de missions et à de meilleurs tarifs. La relecture est essentielle pour corriger les fautes de frappe et d\'orthographe.' }
+                ]
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('methodsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: methodsData.map(m => m.title),
+                    datasets: [
+                        {
+                            label: 'Potentiel de Gain (sur 10)',
+                            data: methodsData.map(m => m.potential),
+                            backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                            borderColor: 'rgba(15, 118, 110, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Facilité d\'Accès (sur 10)',
+                            data: methodsData.map(m => m.accessibility),
+                            backgroundColor: 'rgba(100, 116, 139, 0.6)',
+                            borderColor: 'rgba(51, 65, 85, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { beginAtZero: true, max: 10 },
+                        y: { ticks: { autoSkip: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + ' / 10';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const methodSelector = document.getElementById('method-selector');
+            const methodDetailsContainer = document.getElementById('method-details');
+            
+            methodsData.forEach(method => {
+                const button = document.createElement('button');
+                button.className = 'method-btn p-4 bg-white rounded-xl shadow-md text-center hover:shadow-lg hover:-translate-y-1 smooth-transition focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2';
+                button.dataset.id = method.id;
+                button.innerHTML = `
+                    <div class="text-3xl">${method.icon}</div>
+                    <h3 class="font-semibold mt-2 text-slate-800">${method.title}</h3>
+                    <p class="text-xs text-slate-500">${method.shortDesc}</p>
+                `;
+                methodSelector.appendChild(button);
+            });
+
+            const renderMethodDetails = (methodId) => {
+                const method = methodsData.find(m => m.id === methodId);
+                if (!method) return;
+
+                document.querySelectorAll('.method-btn').forEach(btn => {
+                    btn.classList.remove('ring-2', 'ring-teal-500', 'bg-teal-50');
+                    if(btn.dataset.id === methodId){
+                        btn.classList.add('ring-2', 'ring-teal-500', 'bg-teal-50');
+                    }
+                });
+                
+                let tutorialHtml = method.tutorial.map((step, index) => `
+                    <div class="border-t border-slate-200">
+                        <button class="accordion-btn w-full text-left p-4 flex justify-between items-center" data-index="${index}">
+                            <span class="font-medium text-slate-700">${index + 1}. ${step.title}</span>
+                            <span class="accordion-icon text-teal-600 transform transition-transform">+</span>
+                        </button>
+                        <div class="accordion-content px-4 pb-4 text-slate-600">
+                            <p>${step.content}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                methodDetailsContainer.innerHTML = `
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1">
+                             <h3 class="text-2xl font-bold text-slate-800 mb-4">${method.title}</h3>
+                             <p class="text-slate-600 mb-6">${method.description}</p>
+                             <h4 class="font-semibold mb-2">Plateformes recommandées:</h4>
+                             <div class="flex flex-wrap gap-2 mb-6">
+                                ${method.platforms.map(p => `<span class="bg-slate-200 text-slate-700 text-sm font-medium px-3 py-1 rounded-full">${p}</span>`).join('')}
+                             </div>
+                             <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div><h4 class="font-semibold mb-1">Avantages</h4><ul class="space-y-1">${method.pros.map(p => `<li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✓</span>${p}</li>`).join('')}</ul></div>
+                                <div><h4 class="font-semibold mb-1">Inconvénients</h4><ul class="space-y-1">${method.cons.map(c => `<li class="flex items-start"><span class="text-red-500 mr-2 mt-1">✗</span>${c}</li>`).join('')}</ul></div>
+                             </div>
+                        </div>
+                        <div class="lg:col-span-2 bg-slate-50 rounded-xl border border-slate-200">
+                            <h3 class="text-xl font-bold p-4 border-b border-slate-200">Guide de Démarrage Pas à Pas</h3>
+                            <div class="tutorial-accordion">
+                                ${tutorialHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.querySelectorAll('.accordion-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const content = button.nextElementSibling;
+                        const icon = button.querySelector('.accordion-icon');
+                        const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                        if(isOpen){
+                            content.style.maxHeight = '0px';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            content.style.maxHeight = content.scrollHeight + 'px';
+                            icon.style.transform = 'rotate(45deg)';
+                        }
+                    });
+                });
+            };
+            
+            methodSelector.addEventListener('click', (e) => {
+                const button = e.target.closest('.method-btn');
+                if(button){
+                    renderMethodDetails(button.dataset.id);
+                }
+            });
+
+            renderMethodDetails('microtasks');
+        });
+    </script>
+
+</body>
+</html>
